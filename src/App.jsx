@@ -37,29 +37,30 @@ function App() {
   }
 
   function updateItem(id) {
-    const updateItem = async () => {
-      await axios
-        .patch(baseUrl + "/api/items/" + id, {})
-        .then((response) => {     // then 성공했을때
-          console.log(response.data);
-          
-          setItems(
-            items.map((item) => {
-              if (item.id === id) {
-                console.log("item.id = " + item.id);
-                console.log("item.itemStatus = " + item.itemStatus);
-                item.itemStatus == "ON_SALE" ? "SOLD_OUT" : "ON_SALE";
-              }
-            })  
-          )  
-        })
-        .catch((error) => {   // catch 실패했을때
-          console.log("error : " + error);
-        })
-    }
-    updateItem();
-    console.log("상품이 변경됨");
-  }
+    const updatedItems = items.map((item) => {
+      if (item.id === id) {
+        console.log("item.id = " + item.id);
+        console.log("item.itemStatus = " + item.itemStatus);
+        // Toggle the item's status based on the current status
+        return {
+          ...item,
+          itemStatus: item.itemStatus === "ON_SALE" ? "SOLD_OUT" : "ON_SALE",
+        };
+      }
+      return item;
+    });
+  
+    setItems(updatedItems);
+  
+    axios
+      .patch(baseUrl + "/api/items/status/" + id, {})
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log("error : " + error);
+      });
+  } 
 
   function deleteItem(id) {
     const deleteItem = async () => {
